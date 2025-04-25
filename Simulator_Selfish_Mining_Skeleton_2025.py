@@ -6,8 +6,6 @@ David Starobinski
 April 11, 2025
 """
 
-
-
 # import required packages - 
 # do not add other packages
 
@@ -16,8 +14,6 @@ import numpy as np
 import scipy as sp
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-
-
 
 '''
 Define simulation Global Parameters
@@ -30,11 +26,28 @@ ITERATIONS = 30 # number of independent simulations
 CONF_LEVEL = 0.05 # confidence interval is 100*(1-CONF_LEVEL) percent
 STEPS = 10**4 #Number of steps in each iteration
 
-
-
-
 # Average relative pool revenue in each iteration
 Rpool = np.zeros((ITERATIONS,NUMALPHA)) 
+
+# --- Analytical Formula Function (Equation 8) ---
+def analytical_relative_revenue(alpha, gamma):
+    """
+    Compute the analytical relative pool revenue R_pool
+    based on Equation (8) from the paper:
+    
+    R_pool = [alpha * (1 - alpha)^2 * (4 * alpha + gamma * (1 - 2 * alpha)) - alpha^3] / [1 - alpha * (1 + (2 - alpha) * alpha)]
+    
+    Parameters:
+    alpha (float): Mining power fraction of selfish pool
+    gamma (float): Fraction of honest miners that adopt selfish pool's block in case of a fork
+
+    Returns:
+    float: Analytical value of the selfish mining relative revenue
+    """
+    numerator = alpha * (1 - alpha)**2 * (4*alpha + gamma*(1 - 2*alpha)) - alpha**3
+    denominator = 1 - alpha * (1 + (2 - alpha) * alpha)
+    return numerator / denominator
+
 
 '''
 Main Simulator Loop
@@ -64,13 +77,22 @@ Error =  # Fill code - Compute confidence interval
 '''
 Print simulation results against analytical results
 '''
-print('Statistical results for Gamma = %.3f' %GAMMA)
-Analytical_Rpool = np.zeros(NUMALPHA) # Analytical values
-for a in range(NUMALPHA):
+# --- Print Analytical Results for All Alpha Values ---
+print('Statistical results for Gamma = %.3f' % GAMMA)
 
-        '''
-        Fill code here
-        '''
+# Initialize array to store analytical Rpool values
+Analytical_Rpool = np.zeros(NUMALPHA)
+
+# Loop through all alpha values
+for a in range(NUMALPHA):
+    alpha = ALPHA[a]  # Current alpha value
+    
+    # Compute analytical Rpool using the formula
+    Analytical_Rpool[a] = analytical_relative_revenue(alpha, GAMMA)
+    
+    # Print the analytical result for the current alpha
+    print(f"At Alpha {alpha:.3f}:")
+    print(f"Analytical Relative pool revenue is {Analytical_Rpool[a]:.3f}")
 
 
     
@@ -94,5 +116,3 @@ Fill code here
 '''
 Fill code here
 '''
-
-
